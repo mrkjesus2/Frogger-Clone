@@ -1,11 +1,21 @@
+// Get random integer 0-5 to set row and column
+function getRandom() {
+    return Math.floor(Math.random() * 6);
+}
+
 // Enemies our player must avoid
 var Enemy = function() {
     // Enemy Location
-    // TODO: Randomly generate row, speed, number of enemies?
+    var row = Math.floor(getRandom()/2); // get a number 0-2
+    var col = getRandom(); //get a number 0-5
+    // TODO: Randomly speed, number of enemies?
+    this.x = col * 101; // place enemy in a column
+    this.y = row === 0 ? 60 : 60 + 85 * row; // place enemy in a row
 
     // Enemy Image
     this.sprite = 'images/enemy-bug.png';
 };
+
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
@@ -43,6 +53,9 @@ Player.prototype.handleInput = function() {
 // Place the player object in a variable called player
 var allEnemies = [];
 var player = new Player();
+allEnemies.push(new Enemy());
+allEnemies.push(new Enemy());
+allEnemies.push(new Enemy());
 
 
 // This listens for key presses and sends the keys to your

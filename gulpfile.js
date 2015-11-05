@@ -16,10 +16,10 @@ var gulp = require('gulp'),
 
 // Set your paths here
 var paths = {
-	scripts: ['src/js/*.js'],
-	styles: ['src/css/*.css'],
-	images: ['src/images-src/*'],
-	content: ['src/index.html', 'src/index-bad.html']
+	scripts: ['js/*.js'],
+	styles: ['css/*.css'],
+	images: ['images-src/*'],
+	content: ['index.html']
 }
 
 var dist = {
@@ -33,7 +33,7 @@ var dist = {
 // Our live reload webserver
 
 gulp.task('webserver', function(){
-	gulp.src('src/')
+	gulp.src(' ')
 		.pipe(webserver({
 			livereload: true,
 			open: true,
@@ -80,7 +80,7 @@ gulp.task('jshint', function(){
 
 
 // Images
-
+/*
 gulp.task('resizeImages', function(){
 	gulp.src(paths.images)
 		.pipe(changed('src/images/'))
@@ -106,7 +106,7 @@ gulp.task('resizeImages', function(){
 		}))
 		.pipe(gulp.dest('src/images/'));
 });
-
+//*/
 // Thought it may be helpful to have the imageResize options here(Values listed are default):
 
 // width : 0, //Pixel or % value

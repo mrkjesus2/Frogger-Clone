@@ -182,3 +182,5 @@ var Engine = (function(global) {
      */
     global.ctx = ctx;
 })(this);
+
+console.log(ctx.canvas.width);

@@ -2,6 +2,7 @@
 ** Settings **
 *************/
 var speed = 200;
+var playerSprite = 'images/char-boy.png';
 
 // Get random integer from 0 to num-1
 function getRandom(num) {
@@ -52,9 +53,10 @@ Enemy.prototype.render = function() {
 
 // Player class
 var Player = function() {
-// This class requires an update(), render() and
-// a handleInput() method.
-
+    // initial location
+    this.x = 202;
+    this.y = 410;
+    this.sprite = playerSprite;
 };
 
 Player.prototype.update = function() {
@@ -63,10 +65,34 @@ Player.prototype.update = function() {
 
 Player.prototype.render = function() {
     // TODO: Write the render function
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-Player.prototype.handleInput = function() {
-    // TODO: Write the function
+Player.prototype.handleInput = function(key) {
+    switch (key) {
+        case 'up':
+            if (this.y > 0) {
+                this.y -= 83;
+            }
+            break;
+        case 'down':
+            if (this.y < 410) {
+                this.y += 83;
+            }
+            break;
+        case 'left':
+            if (this.x > 0) {
+                this.x -= 101;
+            }
+            break;
+        case 'right':
+            if (this.x < ctx.canvas.width - 101) {
+                this.x += 101;
+            }
+            break;
+        default:
+            break;
+    }
 };
 
 

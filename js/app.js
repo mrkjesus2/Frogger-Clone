@@ -10,13 +10,14 @@ function getRandom(num) {
 }
 
 function checkCollisions() {
-    // 20 is the empty margin for the player sprite
+    // 30 is the empty margin for the player sprite
     allEnemies.forEach(function(enemy) {
-        if (player.x < enemy.x + enemy.width - 20 && // plyr lftsd lft of enmy rtsd
-            player.x + player.width - 20 > enemy.x && // plyr rtsd rt of enmy lftsd
+        if (player.x < enemy.x + enemy.width - 30 && // plyr lftsd lft of enmy rtsd
+            player.x + player.width - 30 > enemy.x && // plyr rtsd rt of enmy lftsd
             player.y < enemy.y + enemy.height && // plyr tp abv enmy btm
             player.y + player.height > enemy.y + 14) { // plyr btm blw enm tp
                 console.log('Collision');
+                player.reset();
             }
     });
 }
@@ -73,7 +74,7 @@ Enemy.prototype.render = function() {
 
 // Player class
 var Player = function() {
-    // initial location
+    // TODO: Replace this.x and this.y with player.reset()?
     this.x = 202;
     this.y = 410;
     this.width = 100;
@@ -83,15 +84,20 @@ var Player = function() {
 
 Player.prototype.update = function() {
     // TODO: Write the update function
-    // console.log(this.y);
+
+// Reset when the player hits the water
     if (this.y < 0) {
-        // Add to the score here
-        // Add a short congratulations message
        setTimeout(function() {
-            player.x = 202;
-            player.y = 410;
+            player.reset();
        }, 150);
+        // TODO: Add to the score here
+        // TODO: Add a short congratulations message
     }
+};
+
+Player.prototype.reset = function() {
+    this.x = 202;
+    this.y = 410;
 };
 
 Player.prototype.render = function() {
@@ -134,15 +140,8 @@ Player.prototype.handleInput = function(key) {
 var allEnemies = [];
 var player = new Player();
 allEnemies.push(new Enemy());
-// allEnemies.push(new Enemy());
-// allEnemies.push(new Enemy());
-
-console.log(player.x < allEnemies[0].x + allEnemies[0].width);
-console.log(player.x + player.width > allEnemies[0].x);
-console.log(player.y < allEnemies[0].y + allEnemies[0].height);
-console.log(player.y + player.height > allEnemies[0].y);
-console.log(player.y + " " + player.height);
-console.log(allEnemies[0].y + ' ' + allEnemies[0].height);
+allEnemies.push(new Enemy());
+allEnemies.push(new Enemy());
 
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {

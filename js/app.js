@@ -61,6 +61,15 @@ var Player = function() {
 
 Player.prototype.update = function() {
     // TODO: Write the update function
+    // console.log(this.y);
+    if (this.y < 0) {
+        // Add to the score here
+        // Add a short congratulations message
+       setTimeout(function() {
+            player.x = 202;
+            player.y = 410;
+       }, 150);
+    }
 };
 
 Player.prototype.render = function() {

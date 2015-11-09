@@ -1,7 +1,7 @@
 /*************
 ** Settings **
 *************/
-var speed = 200;
+var speed = 300;
 var playerSprite = 'images/char-boy.png';
 
 // Get random integer from 0 to num-1
@@ -45,9 +45,9 @@ Character.prototype.place = function() {
 // TODO: Random speed, number of enemies?
 // Enemies our player must avoid
 var Enemy = function() {
-    // Enemy Location
     Character.call(this);
     this.place();
+    this.speed = this.getSpeed();
     this.sprite = 'images/enemy-bug.png'; // Image for enemies
 };
 
@@ -55,13 +55,20 @@ Enemy.prototype = Object.create(Character.prototype);
 
 Enemy.prototype.constructor = Character;
 
+Enemy.prototype.getSpeed = function() {
+    // Varying speed based on level
+    this.speed = (getRandom(201)+200);
+};
+
 Enemy.prototype.update = function(dt) {
 // Update the enemy position, Parameter: dt, time delta between ticks
     // Move enemy if out of bounds
     if (this.x < ctx.canvas.width) {
-        this.x += speed * dt; //dt smooths perf across cpus
+        this.x += this.speed * dt; //dt smooths perf across cpus
     } else {
         this.place();
+        this.getSpeed();
+        console.log(this.speed);
     }
 };
 
@@ -73,18 +80,17 @@ Enemy.prototype.render = function() {
 /*******************
 ** Player related **
 *******************/
-
-// Player class
 var Player = function() {
     // TODO: Replace this.x and this.y with player.reset()?
     Character.call(this);
-    this.x = 202;
-    this.y = 410;
+    this.reset();
     this.sprite = playerSprite;
 };
 
 Player.prototype = Object.create(Character.prototype);
+
 Player.prototype.constructor = Character;
+
 Player.prototype.update = function() {
 // Reset when the player hits the water
     if (this.y < 0) {
@@ -144,7 +150,6 @@ allEnemies.push(new Enemy());
 allEnemies.push(new Enemy());
 allEnemies.push(new Enemy());
 
-console.log(typeof allEnemies[0]);
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {

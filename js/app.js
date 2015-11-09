@@ -9,14 +9,14 @@ function getRandom(num) {
     return Math.floor(Math.random() * num);
 }
 
+// TODO: Add gem collision test
 function checkCollisions() {
     // 30 is the empty margin for the player sprite
     allEnemies.forEach(function(enemy) {
-        if (player.x < enemy.x + enemy.width - 30 && // plyr lftsd lft of enmy rtsd
-            player.x + player.width - 30 > enemy.x && // plyr rtsd rt of enmy lftsd
-            player.y < enemy.y + enemy.height && // plyr tp abv enmy btm
-            player.y + player.height > enemy.y + 14) { // plyr btm blw enm tp
-                console.log('Collision');
+        if (player.x < enemy.x + enemy.width - 30 &&
+            player.x + player.width - 30 > enemy.x &&
+            player.y < enemy.y + enemy.height &&
+            player.y + player.height > enemy.y + 14) {
                 player.reset();
             }
     });
@@ -25,10 +25,17 @@ function checkCollisions() {
 /********************
 ** Character Class **
 ********************/
-// Keep if the widths of player and enemy can be the same
 var Character = function() {
     this.width = 100;
     this.height = 80;
+};
+
+// TODO: Add visible x possibility
+Character.prototype.place = function() {
+    var row = getRandom(3); // get a number 0-2
+    var col = getRandom(6); //get a number 0-5
+    this.x = col * -101; // place enemy in a column
+    this.y = row === 0 ? 60 : 60 + 85 * row; // place enemy in a row
 };
 
 /******************
@@ -39,27 +46,22 @@ var Character = function() {
 // Enemies our player must avoid
 var Enemy = function() {
     // Enemy Location
-    var row = getRandom(3); // get a number 0-2
-    var col = getRandom(6); //get a number 0-5
-
-    this.x = col * -101; // place enemy in a column
-    this.y = row === 0 ? 60 : 60 + 85 * row; // place enemy in a row
-    this.width = 100;
-    this.height = 80;
+    Character.call(this);
+    this.place();
     this.sprite = 'images/enemy-bug.png'; // Image for enemies
 };
 
-// Update the enemy position, Parameter: dt, time delta between ticks
+Enemy.prototype = Object.create(Character.prototype);
+
+Enemy.prototype.constructor = Character;
+
 Enemy.prototype.update = function(dt) {
-    var obj = null; // keep memory in check I think
-    // Check for out of bounds - move or remove
+// Update the enemy position, Parameter: dt, time delta between ticks
+    // Move enemy if out of bounds
     if (this.x < ctx.canvas.width) {
         this.x += speed * dt; //dt smooths perf across cpus
     } else {
-        // Probably a more elegant way
-        obj = new Enemy();
-        this.x = obj.x;
-        this.y = obj.y;
+        this.place();
     }
 };
 
@@ -75,29 +77,28 @@ Enemy.prototype.render = function() {
 // Player class
 var Player = function() {
     // TODO: Replace this.x and this.y with player.reset()?
+    Character.call(this);
     this.x = 202;
     this.y = 410;
-    this.width = 100;
-    this.height = 80;
     this.sprite = playerSprite;
 };
 
+Player.prototype = Object.create(Character.prototype);
+Player.prototype.constructor = Character;
 Player.prototype.update = function() {
-    // TODO: Write the update function
-
 // Reset when the player hits the water
     if (this.y < 0) {
-       setTimeout(function() {
-            player.reset();
-       }, 150);
+        player.reset();
         // TODO: Add to the score here
         // TODO: Add a short congratulations message
     }
 };
 
 Player.prototype.reset = function() {
-    this.x = 202;
-    this.y = 410;
+    setTimeout(function() {
+        player.x = 202;
+        player.y = 410;
+    }, 100);
 };
 
 Player.prototype.render = function() {
@@ -143,6 +144,7 @@ allEnemies.push(new Enemy());
 allEnemies.push(new Enemy());
 allEnemies.push(new Enemy());
 
+console.log(typeof allEnemies[0]);
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {

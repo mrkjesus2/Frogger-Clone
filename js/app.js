@@ -30,8 +30,15 @@ function checkCollisions() {
             player.y < enemy.y + enemy.height &&
             player.y + player.height > enemy.y + 14) {
                 player.reset();
-            }
+        }
     });
+    if (player.x < powerUp.x + powerUp.width &&
+        player.x + player.width > powerUp.x &&
+        player.y < powerUp.y + powerUp.height &&
+        player.y + player.height > powerUp.y + 14) {
+            //TODO: Call powerUp logic here
+            console.log('Power Up');
+    }
 }
 
 /********************

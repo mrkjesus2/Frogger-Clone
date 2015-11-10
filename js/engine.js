@@ -80,7 +80,9 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        checkCollisions();
+        if (checkCollisions(powerUp)) {
+            console.log('Power Up');
+        };
     }
 
     /* This is called by the update function  and loops through all of the
@@ -93,8 +95,10 @@ var Engine = (function(global) {
     function updateEntities(dt) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
+            if (checkCollisions(enemy)) {
+                player.reset()
+            };
         });
-        // TODO: powerUp update?
         player.update();
     }
 

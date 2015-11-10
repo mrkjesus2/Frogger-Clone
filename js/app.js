@@ -21,24 +21,14 @@ function getRandom(num) {
     return Math.floor(Math.random() * num);
 }
 
-// TODO: Add gem collision test
-function checkCollisions() {
-    // 30 is the empty margin for the player sprite
-    allEnemies.forEach(function(enemy) {
-        if (player.x < enemy.x + enemy.width - 30 &&
-            player.x + player.width - 30 > enemy.x &&
-            player.y < enemy.y + enemy.height &&
-            player.y + player.height > enemy.y + 14) {
-                player.reset();
-        }
-    });
-    if (player.x < powerUp.x + powerUp.width &&
-        player.x + player.width > powerUp.x &&
-        player.y < powerUp.y + powerUp.height &&
-        player.y + player.height > powerUp.y + 14) {
-            //TODO: Call powerUp logic here
-            console.log('Power Up');
+function checkCollisions(obj) {
+    if (player.x < obj.x + obj.width &&
+        player.x + player.width > obj.x &&
+        player.y < obj.y + obj.height &&
+        player.y + player.height > obj.y + 14) {
+            return true;
     }
+    return false;
 }
 
 /********************
@@ -49,7 +39,6 @@ var Character = function() {
     this.height = 80;
 };
 
-// TODO: Add visible x possibility
 Character.prototype.place = function() {
     var row = getRandom(3); // get a number 0-2
     var col = getRandom(5); //get a number 0-4
@@ -57,7 +46,7 @@ Character.prototype.place = function() {
     if(this instanceof Enemy) {
         this.x = col * -101; // place enemy in a column
     } else {
-        this.x = col * 101;
+        this.x = col * 101; // place powerUp in a column
     }
 };
 

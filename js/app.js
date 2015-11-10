@@ -1,8 +1,20 @@
 /*************
 ** Settings **
 *************/
-var speed = 300;
 var playerSprite = 'images/char-boy.png';
+//For when I add player select - Do I want to use Selector.png?
+var playerSprites = ['images/char-boy.png',
+                     'images/char-cat-girl.png',
+                     'images/char-horn-girl.png',
+                     'images/char-pink-girl.png',
+                     'images/char-princess-girl.png'];
+var powerUpSprites = ['images/Gem Blue.png',
+                      'images/Gem Green.png',
+                      'images/Gem Orange.png',
+                      'images/Heart.png',
+                      'images/Key.png',
+                      'images/Rock.png',
+                      'images/Star.png'];
 
 // Get random integer from 0 to num-1
 function getRandom(num) {
@@ -33,17 +45,36 @@ var Character = function() {
 // TODO: Add visible x possibility
 Character.prototype.place = function() {
     var row = getRandom(3); // get a number 0-2
-    var col = getRandom(6); //get a number 0-5
-    this.x = col * -101; // place enemy in a column
+    var col = getRandom(5); //get a number 0-4
     this.y = row === 0 ? 60 : 60 + 85 * row; // place enemy in a row
+    if(this instanceof Enemy) {
+        this.x = col * -101; // place enemy in a column
+    } else {
+        this.x = col * 101;
+    }
+};
+
+/*********************
+** Power Up Related **
+*********************/
+var PowerUp = function() {
+    Character.call(this);
+    this.place();
+    this.sprite = powerUpSprites[4]; //Placeholder while writing class
+};
+
+PowerUp.prototype = Object.create(Character.prototype);
+
+PowerUp.prototype.constructor = Character;
+
+PowerUp.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
 /******************
 ** Enemy Related **
 ******************/
-
-// TODO: Random speed, number of enemies?
-// Enemies our player must avoid
+// TODO: Random number of enemies?
 var Enemy = function() {
     Character.call(this);
     this.place();
@@ -56,8 +87,8 @@ Enemy.prototype = Object.create(Character.prototype);
 Enemy.prototype.constructor = Character;
 
 Enemy.prototype.getSpeed = function() {
-    // Varying speed based on level
-    this.speed = (getRandom(201)+200);
+    // TODO: Varying speed based on level
+    this.speed = getRandom(201)+200;
 };
 
 Enemy.prototype.update = function(dt) {
@@ -68,7 +99,7 @@ Enemy.prototype.update = function(dt) {
     } else {
         this.place();
         this.getSpeed();
-        console.log(this.speed);
+        // console.log(this.speed);
     }
 };
 
@@ -81,7 +112,6 @@ Enemy.prototype.render = function() {
 ** Player related **
 *******************/
 var Player = function() {
-    // TODO: Replace this.x and this.y with player.reset()?
     Character.call(this);
     this.reset();
     this.sprite = playerSprite;
@@ -108,11 +138,12 @@ Player.prototype.reset = function() {
 };
 
 Player.prototype.render = function() {
-    // TODO: Write the render function
+    // TODO: Edit player for powerup states?
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
 Player.prototype.handleInput = function(key) {
+    // TODO: Refactor in case we add more columns
     switch (key) {
         case 'up':
             if (this.y > 0) {
@@ -146,9 +177,12 @@ Player.prototype.handleInput = function(key) {
 // Now instantiate your objects.
 var allEnemies = [];
 var player = new Player();
+var powerUp = new PowerUp();
 allEnemies.push(new Enemy());
 allEnemies.push(new Enemy());
 allEnemies.push(new Enemy());
+
+console.log(powerUp instanceof Enemy);
 
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {

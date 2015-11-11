@@ -31,6 +31,7 @@ function checkCollisions(obj) {
     return false;
 }
 
+
 /********************
 ** Character Class **
 ********************/
@@ -68,7 +69,7 @@ PowerUp.prototype.constructor = Character;
 PowerUp.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
-// TODO: Get the powerups applied to the player
+
 PowerUp.prototype.apply = function() {
     switch (this.sprite) {
         case 'images/gem-blue.png' :
@@ -82,12 +83,6 @@ PowerUp.prototype.apply = function() {
             break;
         case 'images/heart.png' :
             player.addToLife(2);
-            break;
-        case 'images/key.png' :
-            //call key method - Probably don't use this
-            break;
-        case 'images/rock.png' :
-            //Probably don't use this
             break;
         case 'images/star.png' :
             //call invincibility method
@@ -151,8 +146,8 @@ Player.prototype.constructor = Character;
 Player.prototype.update = function() {
     // Reset when the player hits the water
     if (this.y < 0) {
-        player.reset();
-        // TODO: Add to the score here
+        // player.reset();
+        player.addToScore(1);
         // TODO: Add a short congratulations message
     }
 };
@@ -206,6 +201,28 @@ Player.prototype.addToLife = function(lives) {
     this.lives += lives;
 };
 
+/*****************
+** Text Related **
+*****************/
+var ScoreBoard = function() {
+    // Reset the canvas
+    ctx.clearRect(0, 585, 505, 100);
+    // Draw the background
+    ctx.fillStyle = 'green';
+    ctx.fillRect(0, 585, 505, 100);
+
+    ctx.font = '36pt Impact';
+    ctx.fillStyle = 'blue';
+    ctx.strokeColor = 'black';
+    ctx.lineWidth = 3;
+    //Draw the score
+    ctx.fillText('Score: ' + player.score, 250, 655);
+    ctx.strokeText('Score: ' + player.score, 250, 655);
+    //Draw the remaining lives
+    ctx.fillText('Lives: ' + player.lives, 20, 655);
+    ctx.strokeText('Lives: ' + player.lives, 20, 655);
+};
+
 /******************
 ** Instantiation **
 ******************/
@@ -217,8 +234,7 @@ var powerUp = new PowerUp();
 allEnemies.push(new Enemy());
 allEnemies.push(new Enemy());
 allEnemies.push(new Enemy());
-
-console.log('Here for tests');
+console.log(ScoreBoard);
 
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {

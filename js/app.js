@@ -8,13 +8,13 @@ var playerSprites = ['images/char-boy.png',
                      'images/char-horn-girl.png',
                      'images/char-pink-girl.png',
                      'images/char-princess-girl.png'];
-var powerUpSprites = ['images/Gem Blue.png',
-                      'images/Gem Green.png',
-                      'images/Gem Orange.png',
-                      'images/Heart.png',
-                      'images/Key.png',
-                      'images/Rock.png',
-                      'images/Star.png'];
+var powerUpSprites = ['images/gem-blue.png',
+                      'images/gem-green.png',
+                      'images/gem-orange.png',
+                      'images/heart.png',
+                      'images/key.png',
+                      'images/rock.png',
+                      'images/star.png'];
 
 // Get random integer from 0 to num-1
 function getRandom(num) {
@@ -55,7 +55,9 @@ Character.prototype.place = function() {
 *********************/
 var PowerUp = function() {
     Character.call(this);
-    this.place();
+    setTimeout(function() {
+        powerUp.place();
+    }, getRandom(5000));
     this.sprite = powerUpSprites[4]; //Placeholder while writing class
 };
 
@@ -65,6 +67,34 @@ PowerUp.prototype.constructor = Character;
 
 PowerUp.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+// TODO: Get the powerups applied to the player
+PowerUp.prototype.apply = function() {
+    switch (this.sprite) {
+        case 'images/gem-blue.png' :
+            //call addScore()
+            break;
+        case 'images/gem-green.png' :
+            //call addScore()
+            break;
+        case 'images/gem-orange.png' :
+            //call addScore()
+            break;
+        case 'images/heart.png' :
+            //call addLife()
+            break;
+        case 'images/key.png' :
+            //call key method - Probably don't use this
+            break;
+        case 'images/rock.png' :
+            //Probably don't use this
+            break;
+        case 'images/star.png' :
+            //call invincibility method
+            break;
+        default :
+            break;
+    }
 };
 
 /******************
@@ -88,14 +118,13 @@ Enemy.prototype.getSpeed = function() {
 };
 
 Enemy.prototype.update = function(dt) {
-// Update the enemy position, Parameter: dt, time delta between ticks
+    // Update the enemy position, Parameter: dt, time delta between ticks
     // Move enemy if out of bounds
     if (this.x < ctx.canvas.width) {
         this.x += this.speed * dt; //dt smooths perf across cpus
     } else {
         this.place();
         this.getSpeed();
-        // console.log(this.speed);
     }
 };
 
@@ -118,7 +147,7 @@ Player.prototype = Object.create(Character.prototype);
 Player.prototype.constructor = Character;
 
 Player.prototype.update = function() {
-// Reset when the player hits the water
+    // Reset when the player hits the water
     if (this.y < 0) {
         player.reset();
         // TODO: Add to the score here
@@ -178,7 +207,7 @@ allEnemies.push(new Enemy());
 allEnemies.push(new Enemy());
 allEnemies.push(new Enemy());
 
-console.log(powerUp instanceof Enemy);
+console.log('Here for tests');
 
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {

@@ -81,8 +81,8 @@ var Engine = (function(global) {
     function update(dt) {
         updateEntities(dt);
         if (checkCollisions(powerUp)) {
-            console.log('Power Up');
-        };
+            powerUp.apply();
+        }
     }
 
     /* This is called by the update function  and loops through all of the
@@ -95,9 +95,9 @@ var Engine = (function(global) {
     function updateEntities(dt) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
-            if (checkCollisions(enemy)) {
-                player.reset()
-            };
+            // if (checkCollisions(enemy)) {
+            //     player.reset();
+            // }
         });
         player.update();
     }
@@ -178,13 +178,13 @@ var Engine = (function(global) {
         'images/grass-block.png',
         'images/enemy-bug.png',
         'images/char-boy.png',
-        'images/Gem Blue.png',
-        'images/Gem Green.png',
-        'images/Gem Orange.png',
-        'images/Heart.png',
-        'images/Key.png',
-        'images/Rock.png',
-        'images/Star.png'
+        'images/gem-blue.png',
+        'images/gem-green.png',
+        'images/gem-orange.png',
+        'images/heart.png',
+        'images/key.png',
+        'images/rock.png',
+        'images/star.png'
     ]);
     Resources.onReady(init);
 

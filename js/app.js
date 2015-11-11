@@ -55,10 +55,10 @@ Character.prototype.place = function() {
 *********************/
 var PowerUp = function() {
     Character.call(this);
+    this.sprite = powerUpSprites[3]; //Placeholder while writing class
     setTimeout(function() {
         powerUp.place();
     }, getRandom(5000));
-    this.sprite = powerUpSprites[4]; //Placeholder while writing class
 };
 
 PowerUp.prototype = Object.create(Character.prototype);
@@ -72,16 +72,16 @@ PowerUp.prototype.render = function() {
 PowerUp.prototype.apply = function() {
     switch (this.sprite) {
         case 'images/gem-blue.png' :
-            //call addScore()
+            player.addToScore(2);
             break;
         case 'images/gem-green.png' :
-            //call addScore()
+            player.addToScore(5);
             break;
         case 'images/gem-orange.png' :
-            //call addScore()
+            player.addToScore(10);
             break;
         case 'images/heart.png' :
-            //call addLife()
+            player.addToLife(2);
             break;
         case 'images/key.png' :
             //call key method - Probably don't use this
@@ -139,6 +139,8 @@ Enemy.prototype.render = function() {
 var Player = function() {
     Character.call(this);
     this.reset();
+    this.score = 0;
+    this.lives = 5;
     this.sprite = playerSprite;
 };
 
@@ -193,6 +195,15 @@ Player.prototype.handleInput = function(key) {
         default:
             break;
     }
+};
+
+// TODO: Make sure addTo functions only add once per call
+Player.prototype.addToScore = function(points) {
+    this.score += points;
+};
+
+Player.prototype.addToLife = function(lives) {
+    this.lives += lives;
 };
 
 /******************

@@ -58,6 +58,7 @@ Character.prototype.place = function() {
     var col = getRandom(5); //get a number 0-4
     this.y = row === 0 ? 60 : 60 + 85 * row; // place enemy in a row
     if(this instanceof Enemy) {
+        col = getRandom(10);
         this.x = col * -101; // place enemy in a column
     } else {
         this.x = col * 101; // place powerUp in a column
@@ -108,7 +109,6 @@ PowerUp.prototype.apply = function() {
 /******************
 ** Enemy Related **
 ******************/
-// TODO: Random number of enemies?
 var Enemy = function() {
     Character.call(this);
     this.place();
@@ -121,8 +121,7 @@ Enemy.prototype = Object.create(Character.prototype);
 Enemy.prototype.constructor = Character;
 
 Enemy.prototype.getSpeed = function() {
-    // TODO: Varying speed based on level
-    this.speed = getRandom(201)+200;
+    this.speed = getRandom(151)+150;
 };
 
 Enemy.prototype.update = function(dt) {
@@ -142,8 +141,10 @@ Enemy.prototype.render = function() {
 };
 
 function generateEnemies(level) {
+    // Clear previous enemies
     allEnemies = [];
-    var numberEnemies = level === 'easy' ? 3 : level === 'hard' ? 5 : 4;
+    // Generate enemies based on level
+    var numberEnemies = level === 'easy' ? 3 : level === 'hard' ? 7 : 5;
     for (var i = 0; i < numberEnemies; i++) {
         allEnemies.push(new Enemy());
     }
@@ -167,7 +168,7 @@ Player.prototype.constructor = Character;
 Player.prototype.update = function() {
     // Reset when the player hits the water
     if (this.y < 0) {
-        // player.reset();
+        player.reset();
         player.addToScore(1);
         // TODO: Add a short congratulations message
     }

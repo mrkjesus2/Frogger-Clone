@@ -13,10 +13,10 @@ var playerSprites = ['images/char-boy.png',
 var powerUpSprites = ['images/gem-blue.png',
                       'images/gem-green.png',
                       'images/gem-orange.png',
-                      'images/heart.png',
-                      'images/key.png',
-                      'images/rock.png',
-                      'images/star.png'];
+                      'images/Heart.png',
+                      'images/Hey.png',
+                      'images/Rock.png',
+                      'images/Star.png'];
 
 // Helper arrays
 var highScores = [1003, 568, 12, 9];
@@ -175,10 +175,10 @@ Player.prototype.update = function() {
 };
 
 Player.prototype.reset = function() {
-    setTimeout(function() {
-        player.x = 202;
-        player.y = 410;
-    }, 100);
+    // setTimeout(function() {
+        this.x = 202;
+        this.y = 410;
+    // }, 100);
 };
 
 Player.prototype.render = function() {
@@ -216,7 +216,9 @@ Player.prototype.handleInput = function(key) {
 
 // TODO: Make sure addTo functions only add once per call
 Player.prototype.addToScore = function(points) {
-    this.score += points;
+    // prevScore = this.score;
+    // if (this.score === prevScore)
+        this.score += points;
 };
 
 Player.prototype.addToLife = function(lives) {
@@ -406,8 +408,6 @@ var ScoreBoard = function() {
 /******************
 ** Instantiation **
 ******************/
-
-// Now instantiate your objects.
 var allEnemies = [];
 var player = new Player();
 var powerUp = new PowerUp();

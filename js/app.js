@@ -357,10 +357,10 @@ function checkButtonClick(buttons, click) {
                         break;
                     case 'Hard' :
                         level = 'hard';
-                        startScreen();
+                        StartScreen();
                         break;
                     default :
-                        playerSprite = playerSprites[button.name];
+                        player.sprite = playerSprites[button.name];
                         StartScreen();
                         break;
                 }

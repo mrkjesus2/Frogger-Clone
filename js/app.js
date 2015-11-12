@@ -205,11 +205,11 @@ Player.prototype.addToLife = function(lives) {
 };
 
 /*****************
-** Text Related **
+** Start Screen **
 *****************/
-var Button = function(text, xstart, ystart) {
+var Button = function(text, xstart, ystart, col) {
     this.name = text;
-    this.width = ctx.canvas.width/2-30;
+    this.width = ctx.canvas.width/col-30;
     this.height = ctx.canvas.height/6;
     this.x = xstart;
     this.y = ystart;
@@ -252,9 +252,30 @@ var StartScreen = function() {
         ctx.fillText('Hi-Scores', ctx.canvas.width/2, 40);
 
         // Select Buttons
-        this.levelButton = new Button('Select Level', 20, 350);
-        this.playerButton = new Button('Select Player', 263, 350);
-        this.startButton = new Button('Start Game', 141, 500);
+        this.levelButton = new Button('Select Level', 20, 350, 2);
+        this.playerButton = new Button('Select Player', 263, 350, 2);
+        this.startButton = new Button('Start Game', 141, 500, 2);
+};
+
+var LevelSelect = function() {
+    ctx.fillStyle = 'rgba(155, 145, 145, 0.5)';
+    ctx.clearRect(0, 250, 505, 450);
+    ctx.fillRect(0, 250, 505, 450);
+    this.easy = new Button('Easy', 20, 350, 3);
+    this.normal = new Button('Normal', 182, 350, 3);
+    this.hard = new Button('Hard', 345, 350, 3);
+};
+
+var PlayerSelect = function() {
+    ctx.fillStyle = 'rgba(155, 145, 145, 0.5)';
+    ctx.clearRect(0, 250, 505, 450);
+    ctx.fillRect(0, 250, 505, 450);
+    var x = 0;
+    var y = 350;
+    playerSprites.forEach(function(player) {
+        ctx.drawImage(Resources.get(player), x, y);
+        x += 101;
+    });
 };
 
 function getClickPosition(event) {
@@ -278,7 +299,7 @@ function getClickPosition(event) {
         startScreen.startButton
     ];
     checkButtonClick(buttons, click);
-
+    console.log(mouseX + '-' + mouseY);
 }
 
 function checkButtonClick(buttons, click) {
@@ -286,26 +307,29 @@ function checkButtonClick(buttons, click) {
         if (button.x < click[0] &&
             click[0] < button.x + button.width &&
             button.y < click[1] &&
-            click[1] < button.y + button.width) {
+            click[1] < button.y + button.height) {
                 switch (button.name) {
                     case 'Select Player' :
-                        console.log(this);
+                        PlayerSelect();
+                        console.log('Hey Playa, Playa');
                         break;
                     case 'Select Level' :
-                        console.log(this);
+                        LevelSelect();
+                        console.log('You make it easy');
                         break;
                     case 'Start Game' :
                         ready = true;
-                        console.log(this);
                         break;
                     default :
                         break;
                 }
-                console.log(button.name + ' has been hit');
         }
     });
 }
 
+/****************
+** Score Board **
+****************/
 
 var ScoreBoard = function() {
     // Reset the canvas

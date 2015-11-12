@@ -14,7 +14,7 @@ var powerUpSprites = ['images/gem-blue.png',
                       'images/gem-green.png',
                       'images/gem-orange.png',
                       'images/Heart.png',
-                      'images/Hey.png',
+                      'images/Key.png',
                       'images/Rock.png',
                       'images/Star.png'];
 

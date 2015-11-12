@@ -1,9 +1,11 @@
 /*************
 ** Settings **
 *************/
+// Startscreen of Play?
 var ready = false;
+
+// Sprite arrays
 var playerSprite = 'images/char-boy.png';
-//For when I add player select - Do I want to use Selector.png?
 var playerSprites = ['images/char-boy.png',
                      'images/char-cat-girl.png',
                      'images/char-horn-girl.png',
@@ -16,14 +18,23 @@ var powerUpSprites = ['images/gem-blue.png',
                       'images/key.png',
                       'images/rock.png',
                       'images/star.png'];
+
+// Helper arrays
 var highScores = [1003, 568, 12, 9];
-var levels = ['easy', 'medium', 'hard'];
+var level = 'normal'; // Set by checkButtonClick()
+var buttons = []; // Used to pass buttons to checkButtonClick()
+
+
+/*********************
+** Helper Functions **
+*********************/
 
 // Get random integer from 0 to num-1
 function getRandom(num) {
     return Math.floor(Math.random() * num);
 }
 
+// Check if our hero collides with given object
 function checkCollisions(obj) {
     if (player.x < obj.x + obj.width &&
         player.x + player.width > obj.x &&
@@ -232,6 +243,9 @@ var Button = function(text, xstart, ystart, col) {
 
 
 var StartScreen = function() {
+        // Reset
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
         //Background
         ctx.fillStyle = 'rgba(155, 145, 145, 0.5)';
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -251,29 +265,48 @@ var StartScreen = function() {
         ctx.strokeText('Hi-Scores', ctx.canvas.width/2, 40);
         ctx.fillText('Hi-Scores', ctx.canvas.width/2, 40);
 
-        // Select Buttons
+        // Make Select Buttons
         this.levelButton = new Button('Select Level', 20, 350, 2);
         this.playerButton = new Button('Select Player', 263, 350, 2);
         this.startButton = new Button('Start Game', 141, 500, 2);
+
+        // Assign buttons for checkButtonClick
+        buttons = [
+            this.levelButton,
+            this.playerButton,
+            this.startButton
+        ];
 };
 
-var LevelSelect = function() {
+var levelSelect = function() {
+    // Reset the drawing area
     ctx.fillStyle = 'rgba(155, 145, 145, 0.5)';
     ctx.clearRect(0, 250, 505, 450);
     ctx.fillRect(0, 250, 505, 450);
+
+    // Create the level buttons
     this.easy = new Button('Easy', 20, 350, 3);
     this.normal = new Button('Normal', 182, 350, 3);
     this.hard = new Button('Hard', 345, 350, 3);
+
+    // Assign for buttonClickCheck()
+    buttons = [this.easy, this.normal, this.hard];
 };
 
-var PlayerSelect = function() {
+var playerSelect = function() {
+    // Reset the drawing area
     ctx.fillStyle = 'rgba(155, 145, 145, 0.5)';
     ctx.clearRect(0, 250, 505, 450);
     ctx.fillRect(0, 250, 505, 450);
+    // Initial Position
     var x = 0;
     var y = 350;
-    playerSprites.forEach(function(player) {
-        ctx.drawImage(Resources.get(player), x, y);
+    buttons = [];
+    // Draw each Character
+    playerSprites.forEach(function(player, index) {
+        console.log(index);
+        buttons.push(new Button(index, x + 15, y, 5));
+        ctx.drawImage(Resources.get(player), x, y - 40);
         x += 101;
     });
 };
@@ -293,13 +326,9 @@ function getClickPosition(event) {
     mouseY = y - ctx.canvas.offsetTop - window.pageYOffset;
     //All me
     var click= [mouseX, mouseY];
-    var buttons = [
-        startScreen.levelButton,
-        startScreen.playerButton,
-        startScreen.startButton
-    ];
+    // console.log (buttons);
     checkButtonClick(buttons, click);
-    console.log(mouseX + '-' + mouseY);
+    // console.log(mouseX + '-' + mouseY);
 }
 
 function checkButtonClick(buttons, click) {
@@ -310,17 +339,29 @@ function checkButtonClick(buttons, click) {
             click[1] < button.y + button.height) {
                 switch (button.name) {
                     case 'Select Player' :
-                        PlayerSelect();
-                        console.log('Hey Playa, Playa');
+                        playerSelect();
                         break;
                     case 'Select Level' :
-                        LevelSelect();
-                        console.log('You make it easy');
+                        levelSelect();
                         break;
                     case 'Start Game' :
                         ready = true;
                         break;
+                    case 'Easy' :
+                        level = 'easy';
+                        StartScreen();
+                        break;
+                    case 'Normal' :
+                        level = 'normal';
+                        StartScreen();
+                        break;
+                    case 'Hard' :
+                        level = 'hard';
+                        startScreen();
+                        break;
                     default :
+                        playerSprite = playerSprites[button.name];
+                        StartScreen();
                         break;
                 }
         }

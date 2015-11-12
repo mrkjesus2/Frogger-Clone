@@ -14,11 +14,13 @@ var powerUpSprites = ['images/gem-blue.png',
                       'images/gem-green.png',
                       'images/gem-orange.png',
                       'images/Heart.png',
-                      'images/Key.png',
-                      'images/Rock.png',
-                      'images/Star.png'];
+                      'images/Star.png'
+                      // 'images/Key.png',
+                      // 'images/Rock.png',
+                      ];
 
 // Helper arrays
+//TODO: Get highscores going
 var highScores = [1003, 568, 12, 9];
 var level = 'normal'; // Need default value
 var buttons = []; // Used to pass buttons to checkButtonClick()
@@ -70,10 +72,16 @@ Character.prototype.place = function() {
 *********************/
 var PowerUp = function() {
     Character.call(this);
-    this.sprite = powerUpSprites[3]; //Placeholder while writing class
+    this.sprite = powerUpSprites[getRandom(4)];
+    //Randomly generate and remove powerups
+    var time = getRandom(50000) + 10000;
     setTimeout(function() {
         powerUp.place();
-    }, getRandom(5000));
+        setTimeout(function() {
+            powerUp = new PowerUp();
+        }, getRandom(10000) + 5000 + time);
+    }, time);
+
 };
 
 PowerUp.prototype = Object.create(Character.prototype);
@@ -87,18 +95,22 @@ PowerUp.prototype.render = function() {
 PowerUp.prototype.apply = function() {
     switch (this.sprite) {
         case 'images/gem-blue.png' :
+            powerUp = new PowerUp();
             player.addToScore(2);
             break;
         case 'images/gem-green.png' :
+            powerUp = new PowerUp();
             player.addToScore(5);
             break;
         case 'images/gem-orange.png' :
+            powerUp = new PowerUp();
             player.addToScore(10);
             break;
-        case 'images/heart.png' :
+        case 'images/Heart.png' :
+            powerUp = new PowerUp();
             player.addToLife(2);
             break;
-        case 'images/star.png' :
+        case 'images/Star.png' :
             //call invincibility method
             break;
         default :
@@ -175,10 +187,8 @@ Player.prototype.update = function() {
 };
 
 Player.prototype.reset = function() {
-    // setTimeout(function() {
         this.x = 202;
         this.y = 410;
-    // }, 100);
 };
 
 Player.prototype.render = function() {
@@ -216,9 +226,7 @@ Player.prototype.handleInput = function(key) {
 
 // TODO: Make sure addTo functions only add once per call
 Player.prototype.addToScore = function(points) {
-    // prevScore = this.score;
-    // if (this.score === prevScore)
-        this.score += points;
+    this.score += points;
 };
 
 Player.prototype.addToLife = function(lives) {
@@ -314,7 +322,6 @@ var playerSelect = function() {
     buttons = [];
     // Draw each Character
     playerSprites.forEach(function(player, index) {
-        console.log(index);
         buttons.push(new Button(index, x + 15, y, 5));
         ctx.drawImage(Resources.get(player), x, y - 40);
         x += 101;

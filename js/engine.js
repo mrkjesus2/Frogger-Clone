@@ -27,6 +27,7 @@ var Engine = (function(global) {
 
     canvas.width = 505;
     canvas.height = 706;
+    canvas.setAttribute('onclick', 'getClickPosition(event)');
     doc.body.appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
@@ -39,12 +40,14 @@ var Engine = (function(global) {
          * would be the same for everyone (regardless of how fast their
          * computer is) - hurray time!
          */
+        // while (ready === true) {
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
+
         update(dt);
         render();
 
@@ -57,6 +60,7 @@ var Engine = (function(global) {
          * function again as soon as the browser is able to draw another frame.
          */
         win.requestAnimationFrame(main);
+        // }
     }
 
     /* This function does some initial setup that should only occur once,
@@ -65,8 +69,10 @@ var Engine = (function(global) {
      */
     function init() {
         reset();
-        lastTime = Date.now();
-        main();
+        if (ready) {
+            lastTime = Date.now();
+            main();
+        }
     }
 
     /* This function is called by main (our game loop) and itself calls all
@@ -166,9 +172,15 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+        if (!ready) {
+            startScreen; //jshint ignore:line
+            win.requestAnimationFrame(init);
+        }
     }
 
+    function pauseGame() {
+
+    }
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
      * all of these images are properly loaded our game will start.
@@ -194,4 +206,5 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
+    startScreen = new StartScreen();
 })(this);

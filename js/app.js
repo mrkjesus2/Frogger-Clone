@@ -1,6 +1,7 @@
 /*************
 ** Settings **
 *************/
+var ready = false;
 var playerSprite = 'images/char-boy.png';
 //For when I add player select - Do I want to use Selector.png?
 var playerSprites = ['images/char-boy.png',
@@ -15,6 +16,8 @@ var powerUpSprites = ['images/gem-blue.png',
                       'images/key.png',
                       'images/rock.png',
                       'images/star.png'];
+var highScores = [1003, 568, 12, 9];
+var levels = ['easy', 'medium', 'hard'];
 
 // Get random integer from 0 to num-1
 function getRandom(num) {
@@ -204,6 +207,106 @@ Player.prototype.addToLife = function(lives) {
 /*****************
 ** Text Related **
 *****************/
+var Button = function(text, xstart, ystart) {
+    this.name = text;
+    this.width = ctx.canvas.width/2-30;
+    this.height = ctx.canvas.height/6;
+    this.x = xstart;
+    this.y = ystart;
+
+    //Make Button
+    ctx.fillStyle = 'orange';
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+
+    //Text Style
+    ctx.font = '24pt Impact';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'blue';
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 2;
+
+    //Create Text
+    ctx.strokeText(text, xstart + this.width/2, ystart + 65);
+    ctx.fillText(text, xstart + this.width/2, ystart + 65);
+};
+
+
+var StartScreen = function() {
+        //Background
+        ctx.fillStyle = 'rgba(155, 145, 145, 0.5)';
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        // Hi Scores Box
+        ctx.fillStyle = 'orange';
+        ctx.fillRect(10, 10, ctx.canvas.width - 20, ctx.canvas.height / 3);
+
+        //Text Style
+        ctx.font = '24pt Impact';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = 'blue';
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 2;
+
+        //Hi-Scores
+        ctx.strokeText('Hi-Scores', ctx.canvas.width/2, 40);
+        ctx.fillText('Hi-Scores', ctx.canvas.width/2, 40);
+
+        // Select Buttons
+        this.levelButton = new Button('Select Level', 20, 350);
+        this.playerButton = new Button('Select Player', 263, 350);
+        this.startButton = new Button('Start Game', 141, 500);
+};
+
+function getClickPosition(event) {
+    // http://stackoverflow.com/questions/6148065/html5-canvas-buttons
+    var x, y;
+    if (event.x !== undefined && event.y !== undefined) {
+        x = event.x;
+        y = event.y;
+    }
+    // else {
+    //     x = event.clientX + document.body.scrollLeft +document.documentElement.scrollLeft;
+    //     y = event.clientY + document.body.scrollTop +document.documentElement.scrollTop;
+    // }
+    mouseX = x - ctx.canvas.offsetLeft - window.pageXOffset;
+    mouseY = y - ctx.canvas.offsetTop - window.pageYOffset;
+    //All me
+    var click= [mouseX, mouseY];
+    var buttons = [
+        startScreen.levelButton,
+        startScreen.playerButton,
+        startScreen.startButton
+    ];
+    checkButtonClick(buttons, click);
+
+}
+
+function checkButtonClick(buttons, click) {
+    buttons.forEach(function(button) {
+        if (button.x < click[0] &&
+            click[0] < button.x + button.width &&
+            button.y < click[1] &&
+            click[1] < button.y + button.width) {
+                switch (button.name) {
+                    case 'Select Player' :
+                        console.log(this);
+                        break;
+                    case 'Select Level' :
+                        console.log(this);
+                        break;
+                    case 'Start Game' :
+                        ready = true;
+                        console.log(this);
+                        break;
+                    default :
+                        break;
+                }
+                console.log(button.name + ' has been hit');
+        }
+    });
+}
+
+
 var ScoreBoard = function() {
     // Reset the canvas
     ctx.clearRect(0, 585, 505, 100);
@@ -212,6 +315,7 @@ var ScoreBoard = function() {
     ctx.fillRect(0, 585, 505, 100);
 
     ctx.font = '36pt Impact';
+    ctx.textAlign = 'start';
     ctx.fillStyle = 'blue';
     ctx.strokeColor = 'black';
     ctx.lineWidth = 3;
@@ -231,10 +335,11 @@ var ScoreBoard = function() {
 var allEnemies = [];
 var player = new Player();
 var powerUp = new PowerUp();
+var startScreen;
 allEnemies.push(new Enemy());
 allEnemies.push(new Enemy());
 allEnemies.push(new Enemy());
-console.log(ScoreBoard);
+// console.log(ScoreBoard);
 
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {

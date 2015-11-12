@@ -5,7 +5,6 @@
 var ready = false;
 
 // Sprite arrays
-var playerSprite = 'images/char-boy.png';
 var playerSprites = ['images/char-boy.png',
                      'images/char-cat-girl.png',
                      'images/char-horn-girl.png',
@@ -21,7 +20,7 @@ var powerUpSprites = ['images/gem-blue.png',
 
 // Helper arrays
 var highScores = [1003, 568, 12, 9];
-var level = 'normal'; // Set by checkButtonClick()
+var level = 'normal'; // Need default value
 var buttons = []; // Used to pass buttons to checkButtonClick()
 
 
@@ -142,6 +141,14 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+function generateEnemies(level) {
+    allEnemies = [];
+    var numberEnemies = level === 'easy' ? 3 : level === 'hard' ? 5 : 4;
+    for (var i = 0; i < numberEnemies; i++) {
+        allEnemies.push(new Enemy());
+    }
+}
+
 /*******************
 ** Player related **
 *******************/
@@ -150,7 +157,7 @@ var Player = function() {
     this.reset();
     this.score = 0;
     this.lives = 5;
-    this.sprite = playerSprite;
+    this.sprite = playerSprites[0];
 };
 
 Player.prototype = Object.create(Character.prototype);
@@ -349,14 +356,17 @@ function checkButtonClick(buttons, click) {
                         break;
                     case 'Easy' :
                         level = 'easy';
+                        generateEnemies(level);
                         StartScreen();
                         break;
                     case 'Normal' :
                         level = 'normal';
+                        generateEnemies(level);
                         StartScreen();
                         break;
                     case 'Hard' :
                         level = 'hard';
+                        generateEnemies(level);
                         StartScreen();
                         break;
                     default :
@@ -401,9 +411,7 @@ var allEnemies = [];
 var player = new Player();
 var powerUp = new PowerUp();
 var startScreen;
-allEnemies.push(new Enemy());
-allEnemies.push(new Enemy());
-allEnemies.push(new Enemy());
+generateEnemies(level);
 // console.log(ScoreBoard);
 
 // Player.handleInput() method. You don't need to modify this.

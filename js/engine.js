@@ -40,7 +40,7 @@ var Engine = (function(global) {
          * would be the same for everyone (regardless of how fast their
          * computer is) - hurray time!
          */
-        // while (ready === true) {
+
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
@@ -59,8 +59,11 @@ var Engine = (function(global) {
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
-        win.requestAnimationFrame(main);
-        // }
+        if (ready === false) {
+            endGame();
+        } else {
+            win.requestAnimationFrame(main);
+        }
     }
 
     /* This function does some initial setup that should only occur once,
@@ -68,6 +71,7 @@ var Engine = (function(global) {
      * game loop.
      */
     function init() {
+        // console.log('init has been hit');
         reset();
         if (ready) {
             lastTime = Date.now();
@@ -101,9 +105,10 @@ var Engine = (function(global) {
     function updateEntities(dt) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
-            // if (checkCollisions(enemy)) {
-            //     player.reset();
-            // }
+            if (checkCollisions(enemy)) {
+                player.reset();
+                player.addToLife(-1);
+            }
         });
         player.update();
         ScoreBoard();
@@ -180,8 +185,10 @@ var Engine = (function(global) {
         }
     }
 
-    function pauseGame() {
-
+    function endGame() {
+        setTimeout(function() {
+            endScreen();
+        }, 500);
     }
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
@@ -202,7 +209,7 @@ var Engine = (function(global) {
         'images/gem-orange.png',
         'images/Heart.png',
         'images/Key.png',
-        'images/Rock.png',
+        // 'images/Rock.png',
         'images/Star.png'
     ]);
     Resources.onReady(init);

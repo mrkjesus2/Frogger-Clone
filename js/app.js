@@ -37,13 +37,71 @@ function getRandom(num) {
 
 // Check if our hero collides with given object
 function checkCollisions(obj) {
-    if (player.x < obj.x + obj.width &&
-        player.x + player.width > obj.x &&
+    if (player.x + 30 < obj.x + obj.width &&
+        player.x + player.width -30 > obj.x &&
         player.y < obj.y + obj.height &&
         player.y + player.height > obj.y + 14) {
             return true;
     }
     return false;
+}
+
+function getClickPosition(event) {
+    // http://stackoverflow.com/questions/6148065/html5-canvas-buttons
+    // removed lines I deemed unnecessary in this instance and condensed
+    var x, y;
+    if (event.x !== undefined && event.y !== undefined) {
+        x = event.x;
+        y = event.y;
+    }
+    mouseX = x - ctx.canvas.offsetLeft - window.pageXOffset;
+    mouseY = y - ctx.canvas.offsetTop - window.pageYOffset;
+    //All me
+    var click= [mouseX, mouseY];
+    checkButtonClick(buttons, click);
+}
+
+function checkButtonClick(buttons, click) {
+    buttons.forEach(function(button) {
+        if (button.x < click[0] &&
+            click[0] < button.x + button.width &&
+            button.y < click[1] &&
+            click[1] < button.y + button.height) {
+                switch (button.name) {
+                    case 'Select Player' :
+                        playerSelect();
+                        break;
+                    case 'Select Level' :
+                        levelSelect();
+                        break;
+                    case 'Start Game' :
+                        ready = true;
+                        break;
+                    case 'Easy' :
+                        level = 'easy';
+                        generateEnemies(level);
+                        StartScreen();
+                        break;
+                    case 'Normal' :
+                        level = 'normal';
+                        generateEnemies(level);
+                        StartScreen();
+                        break;
+                    case 'Hard' :
+                        level = 'hard';
+                        generateEnemies(level);
+                        StartScreen();
+                        break;
+                    case 'New Game' :
+                        location.reload();
+                        break;
+                    default :
+                        player.sprite = playerSprites[button.name];
+                        StartScreen();
+                        break;
+                }
+        }
+    });
 }
 
 
@@ -70,6 +128,7 @@ Character.prototype.place = function() {
 /*********************
 ** Power Up Related **
 *********************/
+// TODO: Can this be prettier?
 var PowerUp = function() {
     Character.call(this);
     this.sprite = powerUpSprites[getRandom(4)];
@@ -121,6 +180,8 @@ PowerUp.prototype.apply = function() {
 /******************
 ** Enemy Related **
 ******************/
+
+// TODO: Make sure that enemies are spaced out, take a life
 var Enemy = function() {
     Character.call(this);
     this.place();
@@ -169,7 +230,7 @@ var Player = function() {
     Character.call(this);
     this.reset();
     this.score = 0;
-    this.lives = 5;
+    this.lives = 1;
     this.sprite = playerSprites[0];
 };
 
@@ -224,18 +285,45 @@ Player.prototype.handleInput = function(key) {
     }
 };
 
-// TODO: Make sure addTo functions only add once per call
 Player.prototype.addToScore = function(points) {
     this.score += points;
 };
 
 Player.prototype.addToLife = function(lives) {
     this.lives += lives;
+    if (this.lives === 0) {
+        //gameOver();
+        ready = false;
+    }
 };
 
 /*****************
 ** Start Screen **
 *****************/
+//Used for buttons and high scores
+var textStyle = function() {
+    ctx.font = '24pt Impact';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'blue';
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 2;
+};
+
+// Used for score board and end screen
+var largeTextStyle = function() {
+    ctx.font = '36pt Impact';
+    ctx.textAlign = 'start';
+    ctx.fillStyle = 'blue';
+    ctx.strokeColor = 'black';
+    ctx.lineWidth = 3;
+};
+
+var clearButtons = function() {
+    ctx.fillStyle = 'rgba(155, 145, 145, 0.5)';
+    ctx.clearRect(0, 250, 505, 450);
+    ctx.fillRect(0, 250, 505, 450);
+};
+
 var Button = function(text, xstart, ystart, col) {
     this.name = text;
     this.width = ctx.canvas.width/col-30;
@@ -247,60 +335,52 @@ var Button = function(text, xstart, ystart, col) {
     ctx.fillStyle = 'orange';
     ctx.fillRect(this.x, this.y, this.width, this.height);
 
-    //Text Style
-    ctx.font = '24pt Impact';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = 'blue';
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 2;
+    textStyle();
 
     //Create Text
     ctx.strokeText(text, xstart + this.width/2, ystart + 65);
     ctx.fillText(text, xstart + this.width/2, ystart + 65);
 };
 
+var clearScreen = function() {
+    // Reset
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    //Background
+    ctx.fillStyle = 'rgba(155, 145, 145, 0.5)';
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+};
 
 var StartScreen = function() {
-        // Reset
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    clearScreen();
+    highScores();
 
-        //Background
-        ctx.fillStyle = 'rgba(155, 145, 145, 0.5)';
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    // Make Select Buttons
+    this.levelButton = new Button('Select Level', 20, 350, 2);
+    this.playerButton = new Button('Select Player', 263, 350, 2);
+    this.startButton = new Button('Start Game', 141, 500, 2);
 
-        // Hi Scores Box
-        ctx.fillStyle = 'orange';
-        ctx.fillRect(10, 10, ctx.canvas.width - 20, ctx.canvas.height / 3);
+    // Assign buttons for checkButtonClick
+    buttons = [
+        this.levelButton,
+        this.playerButton,
+        this.startButton
+    ];
+};
 
-        //Text Style
-        ctx.font = '24pt Impact';
-        ctx.textAlign = 'center';
-        ctx.fillStyle = 'blue';
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 2;
+var highScores = function() {
+// Hi Scores Box
+    ctx.fillStyle = 'orange';
+    ctx.fillRect(10, 10, ctx.canvas.width - 20, ctx.canvas.height / 3);
 
-        //Hi-Scores
-        ctx.strokeText('Hi-Scores', ctx.canvas.width/2, 40);
-        ctx.fillText('Hi-Scores', ctx.canvas.width/2, 40);
-
-        // Make Select Buttons
-        this.levelButton = new Button('Select Level', 20, 350, 2);
-        this.playerButton = new Button('Select Player', 263, 350, 2);
-        this.startButton = new Button('Start Game', 141, 500, 2);
-
-        // Assign buttons for checkButtonClick
-        buttons = [
-            this.levelButton,
-            this.playerButton,
-            this.startButton
-        ];
+    textStyle();
+    //Hi-Scores
+    ctx.strokeText('Hi-Scores', ctx.canvas.width/2, 40);
+    ctx.fillText('Hi-Scores', ctx.canvas.width/2, 40);
 };
 
 var levelSelect = function() {
-    // Reset the drawing area
-    ctx.fillStyle = 'rgba(155, 145, 145, 0.5)';
-    ctx.clearRect(0, 250, 505, 450);
-    ctx.fillRect(0, 250, 505, 450);
+    clearButtons();
 
     // Create the level buttons
     this.easy = new Button('Easy', 20, 350, 3);
@@ -312,14 +392,13 @@ var levelSelect = function() {
 };
 
 var playerSelect = function() {
-    // Reset the drawing area
-    ctx.fillStyle = 'rgba(155, 145, 145, 0.5)';
-    ctx.clearRect(0, 250, 505, 450);
-    ctx.fillRect(0, 250, 505, 450);
+    clearButtons();
+
     // Initial Position
     var x = 0;
     var y = 350;
     buttons = [];
+
     // Draw each Character
     playerSprites.forEach(function(player, index) {
         buttons.push(new Button(index, x + 15, y, 5));
@@ -328,65 +407,27 @@ var playerSelect = function() {
     });
 };
 
-function getClickPosition(event) {
-    // http://stackoverflow.com/questions/6148065/html5-canvas-buttons
-    var x, y;
-    if (event.x !== undefined && event.y !== undefined) {
-        x = event.x;
-        y = event.y;
-    }
-    // else {
-    //     x = event.clientX + document.body.scrollLeft +document.documentElement.scrollLeft;
-    //     y = event.clientY + document.body.scrollTop +document.documentElement.scrollTop;
-    // }
-    mouseX = x - ctx.canvas.offsetLeft - window.pageXOffset;
-    mouseY = y - ctx.canvas.offsetTop - window.pageYOffset;
-    //All me
-    var click= [mouseX, mouseY];
-    // console.log (buttons);
-    checkButtonClick(buttons, click);
-    // console.log(mouseX + '-' + mouseY);
-}
+/***************
+** End Screen **
+***************/
+var endScreen = function() {
+    clearScreen();
+    highScores();
 
-function checkButtonClick(buttons, click) {
-    buttons.forEach(function(button) {
-        if (button.x < click[0] &&
-            click[0] < button.x + button.width &&
-            button.y < click[1] &&
-            click[1] < button.y + button.height) {
-                switch (button.name) {
-                    case 'Select Player' :
-                        playerSelect();
-                        break;
-                    case 'Select Level' :
-                        levelSelect();
-                        break;
-                    case 'Start Game' :
-                        ready = true;
-                        break;
-                    case 'Easy' :
-                        level = 'easy';
-                        generateEnemies(level);
-                        StartScreen();
-                        break;
-                    case 'Normal' :
-                        level = 'normal';
-                        generateEnemies(level);
-                        StartScreen();
-                        break;
-                    case 'Hard' :
-                        level = 'hard';
-                        generateEnemies(level);
-                        StartScreen();
-                        break;
-                    default :
-                        player.sprite = playerSprites[button.name];
-                        StartScreen();
-                        break;
-                }
-        }
-    });
-}
+    largeTextStyle();
+    ctx.textAlign = 'center';
+
+    ctx.fillText('Game Over', 250, 325);
+    ctx.strokeText('Game Over', 250, 325);
+    // Draw player score
+    ctx.fillText('Your Score: ' + player.score, 250, 425);
+    ctx.strokeText('Your Score: ' + player.score, 250, 425);
+    // Notify if high score
+    // New Game Button
+    this.newGame = new Button('New Game', 15, 500, 1);
+
+    buttons = [this.newGame];
+};
 
 /****************
 ** Score Board **
@@ -399,11 +440,8 @@ var ScoreBoard = function() {
     ctx.fillStyle = 'green';
     ctx.fillRect(0, 585, 505, 100);
 
-    ctx.font = '36pt Impact';
-    ctx.textAlign = 'start';
-    ctx.fillStyle = 'blue';
-    ctx.strokeColor = 'black';
-    ctx.lineWidth = 3;
+    largeTextStyle();
+
     //Draw the score
     ctx.fillText('Score: ' + player.score, 250, 655);
     ctx.strokeText('Score: ' + player.score, 250, 655);

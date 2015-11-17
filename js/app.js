@@ -20,8 +20,6 @@ var powerUpSprites = ['images/gem-blue.png',
                       ];
 
 // Helper arrays
-//TODO: Get highscores going
-var highScores = [1003, 568, 12, 9];
 var level = 'normal'; // Need default value
 var buttons = []; // Used to pass buttons to checkButtonClick()
 
@@ -104,6 +102,31 @@ function checkButtonClick(buttons, click) {
     });
 }
 
+function setScores() {
+    //Store initial array if not in local storage
+    var scores = [0, 0, 0, 0, 0];
+    if (!localStorage.getItem(level+'scores')) {
+        localStorage.setItem(level+'scores', JSON.stringify(scores));
+        return scores;
+    }
+    return JSON.parse(localStorage.getItem(level+'scores'));
+}
+
+function updateScores() {
+    // Get and Sort Scores
+    scores = setScores();
+    scores.sort(function(a, b) {return b-a;});
+
+    // Update Score Array
+    if (!ready) {
+        if (scores[scores.length - 1] < player.score) {
+            scores.pop();
+            scores.push(player.score);
+            localStorage.setItem(level+'scores', JSON.stringify(scores));
+        }
+    }
+    return scores.sort(function(a, b) {return b-a;});
+}
 
 /********************
 ** Character Class **
@@ -181,7 +204,7 @@ PowerUp.prototype.apply = function() {
 ** Enemy Related **
 ******************/
 
-// TODO: Make sure that enemies are spaced out, take a life
+// TODO: Make sure that enemies are spaced out
 var Enemy = function() {
     Character.call(this);
     this.place();
@@ -369,14 +392,34 @@ var StartScreen = function() {
 };
 
 var highScores = function() {
-// Hi Scores Box
+    var scores = updateScores();
+
+    // Hi Scores Box
     ctx.fillStyle = 'orange';
     ctx.fillRect(10, 10, ctx.canvas.width - 20, ctx.canvas.height / 3);
 
     textStyle();
-    //Hi-Scores
+    // Hi-Scores Header
     ctx.strokeText('Hi-Scores', ctx.canvas.width/2, 40);
     ctx.fillText('Hi-Scores', ctx.canvas.width/2, 40);
+
+    // Display Current Levels Scores
+    ctx.font = '20pt Impact';
+    ctx.strokeText(level, ctx.canvas.width/2, 75);
+    ctx.fillText(level, ctx.canvas.width/2, 75);
+
+    // Scores
+    ctx.font = '18pt Impact';
+
+    //Display Each Score
+    scores.forEach(function(score, idx) {
+        ctx.strokeText(idx + 1 + ' - ' + scores[idx],
+                        ctx.canvas.width/2,
+                        110 + idx * 30);
+        ctx.fillText(idx + 1 + ' - ' + scores[idx],
+                        ctx.canvas.width/2,
+                        110 + idx * 30);
+    });
 };
 
 var levelSelect = function() {

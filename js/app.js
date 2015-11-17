@@ -1,7 +1,7 @@
 /*************
 ** Settings **
 *************/
-// Startscreen of Play?
+// Used to Start and Stop Engine Loop
 var ready = false;
 
 // Sprite arrays
@@ -13,13 +13,8 @@ var playerSprites = ['images/char-boy.png',
 var powerUpSprites = ['images/gem-blue.png',
                       'images/gem-green.png',
                       'images/gem-orange.png',
-                      'images/Heart.png',
-                      'images/Star.png'
-                      // 'images/Key.png',
-                      // 'images/Rock.png',
+                      'images/Heart.png'
                       ];
-
-// Helper arrays
 var level = 'normal'; // Need default value
 var buttons = []; // Used to pass buttons to checkButtonClick()
 
@@ -27,7 +22,6 @@ var buttons = []; // Used to pass buttons to checkButtonClick()
 /*********************
 ** Helper Functions **
 *********************/
-
 // Get random integer from 0 to num-1
 function getRandom(num) {
     return Math.floor(Math.random() * num);
@@ -141,7 +135,7 @@ Character.prototype.place = function() {
     var col = getRandom(5); //get a number 0-4
     this.y = row === 0 ? 60 : 60 + 85 * row; // place enemy in a row
     if(this instanceof Enemy) {
-        col = getRandom(10);
+        // col = getRandom(10);
         this.x = col * -101; // place enemy in a column
     } else {
         this.x = col * 101; // place powerUp in a column
@@ -151,12 +145,11 @@ Character.prototype.place = function() {
 /*********************
 ** Power Up Related **
 *********************/
-// TODO: Can this be prettier?
 var PowerUp = function() {
     Character.call(this);
     this.sprite = powerUpSprites[getRandom(4)];
     //Randomly generate and remove powerups
-    var time = getRandom(50000) + 10000;
+    var time = getRandom(20000) + 10000;
     setTimeout(function() {
         powerUp.place();
         setTimeout(function() {
@@ -192,9 +185,6 @@ PowerUp.prototype.apply = function() {
             powerUp = new PowerUp();
             player.addToLife(2);
             break;
-        case 'images/Star.png' :
-            //call invincibility method
-            break;
         default :
             break;
     }
@@ -203,8 +193,6 @@ PowerUp.prototype.apply = function() {
 /******************
 ** Enemy Related **
 ******************/
-
-// TODO: Make sure that enemies are spaced out
 var Enemy = function() {
     Character.call(this);
     this.place();
@@ -253,7 +241,7 @@ var Player = function() {
     Character.call(this);
     this.reset();
     this.score = 0;
-    this.lives = 1;
+    this.lives = 5;
     this.sprite = playerSprites[0];
 };
 
@@ -266,7 +254,6 @@ Player.prototype.update = function() {
     if (this.y < 0) {
         player.reset();
         player.addToScore(1);
-        // TODO: Add a short congratulations message
     }
 };
 
@@ -276,12 +263,10 @@ Player.prototype.reset = function() {
 };
 
 Player.prototype.render = function() {
-    // TODO: Edit player for powerup states?
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
 Player.prototype.handleInput = function(key) {
-    // TODO: Refactor in case we add more columns
     switch (key) {
         case 'up':
             if (this.y > 0) {
@@ -315,7 +300,6 @@ Player.prototype.addToScore = function(points) {
 Player.prototype.addToLife = function(lives) {
     this.lives += lives;
     if (this.lives === 0) {
-        //gameOver();
         ready = false;
     }
 };
@@ -465,7 +449,7 @@ var endScreen = function() {
     // Draw player score
     ctx.fillText('Your Score: ' + player.score, 250, 425);
     ctx.strokeText('Your Score: ' + player.score, 250, 425);
-    // Notify if high score
+
     // New Game Button
     this.newGame = new Button('New Game', 15, 500, 1);
 

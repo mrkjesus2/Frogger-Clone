@@ -1,7 +1,7 @@
 # Mark's Frogger Clone
 
 ## Installation
-Download the zip file and extract it. Run a local webserver and open index.html. Play to your heart's content.  Alternatively you can [play it here](http://mrkjesus2.github.io/project-3-arcade-game).
+Download the zip file and extract it. Open index.html in your browser. Play to your heart's content.  Alternatively you can [play it here](http://mrkjesus2.github.io/project-3-arcade-game).
 
 ## Gameplay
 Use your keyboard to move the character around to screen while avoiding enemies. There are some powerups available for you:

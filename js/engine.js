@@ -90,9 +90,6 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        if (checkCollisions(powerUp)) {
-            powerUp.apply();
-        }
     }
 
     /* This is called by the update function  and loops through all of the
@@ -105,12 +102,9 @@ var Engine = (function(global) {
     function updateEntities(dt) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
-            if (checkCollisions(enemy)) {
-                player.reset();
-                player.addToLife(-1);
-            }
         });
         player.update();
+        powerUp.update();
         ScoreBoard();
     }
 
@@ -124,7 +118,7 @@ var Engine = (function(global) {
         /* This array holds the relative URL to the image used
          * for that particular row of the game level.
          */
-        //Clear Start Screen bleed
+        // Clear Start Screen bleed
         ctx.clearRect(0, 0, ctx.canvas.width, 100);
         var rowImages = [
                 'images/water-block.png',   // Top row is water
@@ -180,7 +174,7 @@ var Engine = (function(global) {
      */
     function reset() {
         if (!ready) {
-            startScreen; //jshint ignore:line
+            start; //jshint ignore:line
             win.requestAnimationFrame(init);
         }
     }
@@ -216,5 +210,5 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
-    startScreen = new StartScreen();
+    var start = new startScreen();
 })(this);

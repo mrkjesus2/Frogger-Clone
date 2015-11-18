@@ -40,7 +40,7 @@ function checkCollisions(obj) {
 
 function getClickPosition(event) {
     // http://stackoverflow.com/questions/6148065/html5-canvas-buttons
-    // removed lines I deemed unnecessary in this instance and condensed
+    // I removed lines I deemed unnecessary
     var x, y;
     if (event.x !== undefined && event.y !== undefined) {
         x = event.x;
@@ -53,6 +53,7 @@ function getClickPosition(event) {
     checkButtonClick(buttons, click);
 }
 
+// See if button is clicked and call appropiate function if true
 function checkButtonClick(buttons, click) {
     buttons.forEach(function(button) {
         if (button.x < click[0] &&
@@ -72,24 +73,24 @@ function checkButtonClick(buttons, click) {
                     case 'Easy' :
                         level = 'easy';
                         generateEnemies(level);
-                        StartScreen();
+                        startScreen();
                         break;
                     case 'Normal' :
                         level = 'normal';
                         generateEnemies(level);
-                        StartScreen();
+                        startScreen();
                         break;
                     case 'Hard' :
                         level = 'hard';
                         generateEnemies(level);
-                        StartScreen();
+                        startScreen();
                         break;
                     case 'New Game' :
                         location.reload();
                         break;
                     default :
                         player.sprite = playerSprites[button.name];
-                        StartScreen();
+                        startScreen();
                         break;
                 }
         }
@@ -111,13 +112,11 @@ function updateScores() {
     scores = setScores();
     scores.sort(function(a, b) {return b-a;});
 
-    // Update Score Array
-    if (!ready) {
-        if (scores[scores.length - 1] < player.score) {
-            scores.pop();
-            scores.push(player.score);
-            localStorage.setItem(level+'scores', JSON.stringify(scores));
-        }
+    // Update Score Array if player has high score
+    if (!ready && scores[scores.length - 1] < player.score) {
+        scores.pop();
+        scores.push(player.score);
+        localStorage.setItem(level+'scores', JSON.stringify(scores));
     }
     return scores.sort(function(a, b) {return b-a;});
 }
@@ -133,12 +132,12 @@ var Character = function() {
 Character.prototype.place = function() {
     var row = getRandom(3); // get a number 0-2
     var col = getRandom(5); //get a number 0-4
-    this.y = row === 0 ? 60 : 60 + 85 * row; // place enemy in a row
+    this.y = row === 0 ? 60 : 60 + 85 * row; // place character in a row
     if(this instanceof Enemy) {
-        // col = getRandom(10);
-        this.x = col * -101; // place enemy in a column
+        col = getRandom(8);
+        this.x = col * -101; // place off screen left
     } else {
-        this.x = col * 101; // place powerUp in a column
+        this.x = col * 101; // place onscreen
     }
 };
 
@@ -167,6 +166,13 @@ PowerUp.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+PowerUp.prototype.update = function() {
+    if (checkCollisions(this)) {
+        this.apply();
+    }
+};
+
+// Call appropriate function(param) for collected powerUp
 PowerUp.prototype.apply = function() {
     switch (this.sprite) {
         case 'images/gem-blue.png' :
@@ -204,15 +210,19 @@ Enemy.prototype = Object.create(Character.prototype);
 
 Enemy.prototype.constructor = Character;
 
+// Prevent creating enemies every time they leave screen -
 Enemy.prototype.getSpeed = function() {
     this.speed = getRandom(151)+150;
 };
 
 Enemy.prototype.update = function(dt) {
-    // Update the enemy position, Parameter: dt, time delta between ticks
-    // Move enemy if out of bounds
+    // Update enemy position - Move enemy if out of bounds
     if (this.x < ctx.canvas.width) {
         this.x += this.speed * dt; //dt smooths perf across cpus
+        if (checkCollisions(this)) {
+            player.reset();
+            player.addToLife(-1);
+        }
     } else {
         this.place();
         this.getSpeed();
@@ -299,14 +309,15 @@ Player.prototype.addToScore = function(points) {
 
 Player.prototype.addToLife = function(lives) {
     this.lives += lives;
+    // End the game
     if (this.lives === 0) {
         ready = false;
     }
 };
 
-/*****************
-** Start Screen **
-*****************/
+/****************************
+** Screen Helper Functions **
+****************************/
 //Used for buttons and high scores
 var textStyle = function() {
     ctx.font = '24pt Impact';
@@ -325,12 +336,14 @@ var largeTextStyle = function() {
     ctx.lineWidth = 3;
 };
 
+// Clears buttons when a selection is made
 var clearButtons = function() {
     ctx.fillStyle = 'rgba(155, 145, 145, 0.5)';
     ctx.clearRect(0, 250, 505, 450);
     ctx.fillRect(0, 250, 505, 450);
 };
 
+// Button Constructor for the screens
 var Button = function(text, xstart, ystart, col) {
     this.name = text;
     this.width = ctx.canvas.width/col-30;
@@ -358,7 +371,10 @@ var clearScreen = function() {
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 };
 
-var StartScreen = function() {
+/*****************
+** Start Screen **
+*****************/
+var startScreen = function() {
     clearScreen();
     highScores();
 
@@ -459,7 +475,6 @@ var endScreen = function() {
 /****************
 ** Score Board **
 ****************/
-
 var ScoreBoard = function() {
     // Reset the canvas
     ctx.clearRect(0, 585, 505, 100);
@@ -477,16 +492,6 @@ var ScoreBoard = function() {
     ctx.strokeText('Lives: ' + player.lives, 20, 655);
 };
 
-/******************
-** Instantiation **
-******************/
-var allEnemies = [];
-var player = new Player();
-var powerUp = new PowerUp();
-var startScreen;
-generateEnemies(level);
-// console.log(ScoreBoard);
-
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
@@ -498,3 +503,11 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+/******************
+** Instantiation **
+******************/
+var allEnemies = [];
+var player = new Player();
+var powerUp = new PowerUp();
+generateEnemies(level);

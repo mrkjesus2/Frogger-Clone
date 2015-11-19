@@ -1,5 +1,5 @@
 /* TODO: Touch controls for mobile
-
+'use strict';
 
 /*************
 ** Settings **

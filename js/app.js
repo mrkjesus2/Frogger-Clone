@@ -1,3 +1,6 @@
+/* TODO: Touch controls for mobile
+
+
 /*************
 ** Settings **
 *************/
@@ -5,12 +8,12 @@
 var ready = false;
 
 // Sprite arrays
-var playerSprites = ['images/char-boy.png',
+var PLAYER_SPRITES = ['images/char-boy.png',
                      'images/char-cat-girl.png',
                      'images/char-horn-girl.png',
                      'images/char-pink-girl.png',
                      'images/char-princess-girl.png'];
-var powerUpSprites = ['images/gem-blue.png',
+var POWER_UP_SPRITES = ['images/gem-blue.png',
                       'images/gem-green.png',
                       'images/gem-orange.png',
                       'images/Heart.png'
@@ -89,7 +92,7 @@ function checkButtonClick(buttons, click) {
                         location.reload();
                         break;
                     default :
-                        player.sprite = playerSprites[button.name];
+                        player.sprite = PLAYER_SPRITES[button.name];
                         startScreen();
                         break;
                 }
@@ -100,11 +103,11 @@ function checkButtonClick(buttons, click) {
 function setScores() {
     //Store initial array if not in local storage
     var scores = [0, 0, 0, 0, 0];
-    if (!localStorage.getItem(level+'scores')) {
-        localStorage.setItem(level+'scores', JSON.stringify(scores));
+    if (!localStorage.getItem(level + 'scores')) {
+        localStorage.setItem(level + 'scores', JSON.stringify(scores));
         return scores;
     }
-    return JSON.parse(localStorage.getItem(level+'scores'));
+    return JSON.parse(localStorage.getItem(level + 'scores'));
 }
 
 function updateScores() {
@@ -116,7 +119,7 @@ function updateScores() {
     if (!ready && scores[scores.length - 1] < player.score) {
         scores.pop();
         scores.push(player.score);
-        localStorage.setItem(level+'scores', JSON.stringify(scores));
+        localStorage.setItem(level + 'scores', JSON.stringify(scores));
     }
     return scores.sort(function(a, b) {return b-a;});
 }
@@ -146,7 +149,7 @@ Character.prototype.place = function() {
 *********************/
 var PowerUp = function() {
     Character.call(this);
-    this.sprite = powerUpSprites[getRandom(4)];
+    this.sprite = POWER_UP_SPRITES[getRandom(4)];
     //Randomly generate and remove powerups
     var time = getRandom(20000) + 10000;
     setTimeout(function() {
@@ -252,7 +255,7 @@ var Player = function() {
     this.reset();
     this.score = 0;
     this.lives = 5;
-    this.sprite = playerSprites[0];
+    this.sprite = PLAYER_SPRITES[0];
 };
 
 Player.prototype = Object.create(Character.prototype);
@@ -443,7 +446,7 @@ var playerSelect = function() {
     buttons = [];
 
     // Draw each Character
-    playerSprites.forEach(function(player, index) {
+    PLAYER_SPRITES.forEach(function(player, index) {
         buttons.push(new Button(index, x + 15, y, 5));
         ctx.drawImage(Resources.get(player), x, y - 40);
         x += 101;
